@@ -8,9 +8,25 @@ body {
 }
 
 .todo-list .todo-item {
-  padding: 15px;
-  margin: 5px 0;
-  border-radius: 0;
+  display: flex;
+  justify-content: space-around;
+  background-color: rgb(242, 242, 242);
+  align-items: center;
+  margin-top: 20px;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.task-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.task-details .taskbox {
+  display: flex;
+}
+.task-details .taskbox input {
+  width: 25px;
 }
 
 div.checker {
@@ -30,4 +46,11 @@ div.checker {
 
 .done {
   text-decoration: line-through;
+}
+
+@media screen and (max-width: 576px) {
+  .todo-list .todo-item {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

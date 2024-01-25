@@ -1,20 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
+import { updateDoc, doc } from "firebase/firestore";
+import { db } from "../services/firebase.config";
 
-const EditTodo = () => {
+const EditTodo = ({ task, id }) => {
+  const [todo, setTodo] = useState([task]);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    const todoDocument = doc(db, "todo", id);
+
+    try {
+      await updateDoc(todoDocument, {
+        todo: todo,
+      });
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <button
         type="button"
         className="btn btn-primary"
         data-bs-toggle="modal"
-        data-bs-target="#exampleModal"
+        data-bs-target={`#id${id}`}
       >
         Edit Todo
       </button>
 
       <div
         className="modal fade"
-        id="exampleModal"
+        id={`id${id}`}
         tabIndex="-1"
         aria-labelledby="editLabel"
         aria-hidden="true"
@@ -33,19 +50,28 @@ const EditTodo = () => {
               ></button>
             </div>
             <div className="modal-body">
-              <form className="d-flex">
-                <input type="text" className="form-control" />
+              <form className="d-flex" onSubmit={handleUpdate}>
+                <input
+                  type="text"
+                  className="form-control"
+                  defaultValue={task}
+                  onChange={(e) => setTodo(e.target.value)}
+                />
               </form>
             </div>
             <div className="modal-footer">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn btn-secondary btn-md-sm"
                 data-bs-dismiss="modal"
               >
                 Close
               </button>
-              <button type="button" className="btn btn-primary">
+              <button
+                type="button"
+                className="btn btn-primary btn-md-sm"
+                onClick={(e) => handleUpdate(e)}
+              >
                 Update Todo
               </button>
             </div>

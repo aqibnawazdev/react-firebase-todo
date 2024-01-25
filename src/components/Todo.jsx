@@ -1,7 +1,60 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import EditTodo from "./EditTodo";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "../services/firebase.config";
 
 const Todo = () => {
+  const [createTodo, setCreateTodo] = useState("");
+  const [todos, setToDos] = useState([]);
+  const collectionRef = collection(db, "todo");
+
+  const fetchData = async () => {
+    try {
+      const querySnapshot = await getDocs(collectionRef);
+      const data = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      setToDos(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const sumbitTodo = async (e) => {
+    e.preventDefault();
+    try {
+      const docRef = await addDoc(collectionRef, {
+        todo: createTodo,
+        isChecked: false,
+        timeStamp: serverTimestamp(),
+      });
+      console.log("Document written with ID: ", docRef.id);
+      fetchData();
+    } catch (error) {
+      console.log(error);
+    }
+
+    setCreateTodo("");
+  };
+
+  const handleDelete = async (id) => {
+    const documentRef = doc(db, "todo", id);
+    const item = await deleteDoc(documentRef);
+    fetchData();
+  };
+  console.log("renders");
   return (
     <>
       <div className="container">
@@ -19,25 +72,32 @@ const Todo = () => {
                 </button>
 
                 <div className="todo-list">
-                  <div className="todo-item">
-                    <hr />
-                    <span>
-                      <div className="checker">
-                        <span className="">
-                          <input type="checkbox" />
-                        </span>
+                  <hr />
+                  {todos.map((task) => (
+                    <div className="todo-item" key={task.id}>
+                      <div className="task-details">
+                        <div className="taskbox">
+                          <input type="checkbox" className="chackbox" />
+                          <h3 className="task">&nbsp; {task.todo}</h3>
+                        </div>
+                        <div className="date">10/11/2022</div>
                       </div>
-                      &nbsp; Go hard or Go Home
-                      <br />
-                      <i>10/11/2022</i>
-                    </span>
-                    <span className=" float-end mx-3">
-                      <EditTodo />
-                    </span>
-                    <button type="button" className="btn btn-danger float-end">
-                      Delete
-                    </button>
-                  </div>
+                      <div className="buttons">
+                        <span className="mx-3">
+                          <EditTodo task={task.todo} id={task.id} />
+                        </span>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={() => {
+                            handleDelete(task.id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -72,6 +132,7 @@ const Todo = () => {
                   type="text"
                   className="form-control"
                   placeholder="Add a Todo"
+                  value={createTodo}
                   onChange={(e) => setCreateTodo(e.target.value)}
                 />
               </div>
