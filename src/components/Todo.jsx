@@ -29,20 +29,8 @@ const Todo = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collectionRef);
-        const data = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-        setToDos(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
-  }, [todos]);
+  }, []);
 
   const sumbitTodo = async (e) => {
     e.preventDefault();
@@ -60,7 +48,7 @@ const Todo = () => {
 
     setCreateTodo("");
   };
-
+  console.log("renders");
   const handleDelete = async (id) => {
     const documentRef = doc(db, "todo", id);
     const item = await deleteDoc(documentRef);
@@ -92,7 +80,7 @@ const Todo = () => {
                           <input type="checkbox" className="chackbox" />
                           <h3 className="task">&nbsp; {task.todo}</h3>
                         </div>
-                        <div className="date">10/11/2022</div>
+                        <div className="date"></div>
                       </div>
                       <div className="buttons">
                         <span className="mx-3">
