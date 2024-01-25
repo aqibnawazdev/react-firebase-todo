@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
 const EditTodo = ({ task, id }) => {
-  const [todo, setTodo] = useState([task]);
+  const [todo, setTodo] = useState();
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -13,7 +13,6 @@ const EditTodo = ({ task, id }) => {
       await updateDoc(todoDocument, {
         todo: todo,
       });
-      window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -69,6 +68,7 @@ const EditTodo = ({ task, id }) => {
               </button>
               <button
                 type="button"
+                data-bs-dismiss="modal"
                 className="btn btn-primary btn-md-sm"
                 onClick={(e) => handleUpdate(e)}
               >

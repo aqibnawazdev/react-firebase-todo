@@ -29,8 +29,20 @@ const Todo = () => {
   };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collectionRef);
+        const data = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setToDos(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchData();
-  }, []);
+  }, [todos]);
 
   const sumbitTodo = async (e) => {
     e.preventDefault();
@@ -54,7 +66,7 @@ const Todo = () => {
     const item = await deleteDoc(documentRef);
     fetchData();
   };
-  console.log("renders");
+
   return (
     <>
       <div className="container">
@@ -141,7 +153,9 @@ const Todo = () => {
                   Close
                 </button>
 
-                <button className="btn btn-primary">Create Todo</button>
+                <button className="btn btn-primary" data-bs-dismiss="modal">
+                  Create Todo
+                </button>
               </div>
             </div>
           </form>
