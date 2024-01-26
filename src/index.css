@@ -28,6 +28,9 @@ body {
 .task-details .taskbox input {
   width: 25px;
 }
+.checked {
+  text-decoration: line-through;
+}
 
 div.checker {
   width: 18px;

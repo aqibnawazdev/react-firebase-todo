@@ -7,12 +7,14 @@ import {
   getDocs,
   doc,
   deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
 const Todo = () => {
   const [createTodo, setCreateTodo] = useState("");
   const [todos, setToDos] = useState([]);
+  const [isChecked, setIsChecked] = useState(null);
   const collectionRef = collection(db, "todo");
 
   const fetchData = async () => {
@@ -27,7 +29,6 @@ const Todo = () => {
       console.log(error);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -48,11 +49,24 @@ const Todo = () => {
 
     setCreateTodo("");
   };
-  console.log("renders");
+
   const handleDelete = async (id) => {
     const documentRef = doc(db, "todo", id);
     const item = await deleteDoc(documentRef);
     fetchData();
+  };
+
+  const handleCheck = async (id, status) => {
+    const checkTask = doc(db, "todo", id);
+    try {
+      await updateDoc(checkTask, {
+        isChecked: !status,
+      });
+      fetchData();
+      setIsChecked(!status);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -77,8 +91,21 @@ const Todo = () => {
                     <div className="todo-item" key={task.id}>
                       <div className="task-details">
                         <div className="taskbox">
-                          <input type="checkbox" className="chackbox" />
-                          <h3 className="task">&nbsp; {task.todo}</h3>
+                          <input
+                            type="checkbox"
+                            id={"checkbox" + task.id}
+                            className="chackbox"
+                            checked={task.isChecked}
+                            onChange={() =>
+                              handleCheck(task.id, task.isChecked)
+                            }
+                          />
+                          <h3
+                            aria-label={"checkbox" + task.id}
+                            className={task.isChecked ? "task checked" : "task"}
+                          >
+                            &nbsp; {task.todo}
+                          </h3>
                         </div>
                         <div className="date"></div>
                       </div>
