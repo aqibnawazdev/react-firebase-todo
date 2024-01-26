@@ -14,7 +14,6 @@ import { db } from "../services/firebase.config";
 const Todo = () => {
   const [createTodo, setCreateTodo] = useState("");
   const [todos, setToDos] = useState([]);
-  const [isChecked, setIsChecked] = useState(null);
   const collectionRef = collection(db, "todo");
 
   const fetchData = async () => {
@@ -29,6 +28,7 @@ const Todo = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -63,7 +63,6 @@ const Todo = () => {
         isChecked: !status,
       });
       fetchData();
-      setIsChecked(!status);
     } catch (error) {
       console.log(error);
     }
@@ -111,7 +110,11 @@ const Todo = () => {
                       </div>
                       <div className="buttons">
                         <span className="mx-3">
-                          <EditTodo task={task.todo} id={task.id} />
+                          <EditTodo
+                            task={task.todo}
+                            id={task.id}
+                            fetch={fetchData}
+                          />
                         </span>
                         <button
                           type="button"

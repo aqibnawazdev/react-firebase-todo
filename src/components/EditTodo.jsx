@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
-const EditTodo = ({ task, id }) => {
+const EditTodo = ({ task, id, fetch }) => {
   const [todo, setTodo] = useState();
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     const todoDocument = doc(db, "todo", id);
-
     try {
       await updateDoc(todoDocument, {
         todo: todo,
       });
+      fetch();
     } catch (error) {
       console.log(error);
     }
