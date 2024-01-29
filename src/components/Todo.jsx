@@ -9,12 +9,19 @@ import {
   deleteDoc,
   updateDoc,
   onSnapshot,
+  query,
+  orderBy,
+  startAt,
+  startAfter,
+  limit,
 } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
 const Todo = () => {
   const [createTodo, setCreateTodo] = useState("");
   const [todos, setToDos] = useState([]);
+  const [loadFlag, setLoadFlag] = useState(true);
+
   const collectionRef = collection(db, "todo");
 
   useEffect(() => {
@@ -22,15 +29,16 @@ const Todo = () => {
   }, []);
 
   const fetchData = async () => {
+    setLoadFlag(true);
+    const first = query(collectionRef, orderBy("todo"), limit(5));
     try {
-      const unsubscribe = onSnapshot(collection(db, "todo"), (doc) => {
+      const unsubscribe = onSnapshot(first, (doc) => {
         const data = doc.docs.map((d) => ({
           ...d.data(),
           id: d.id,
         }));
         setToDos(data);
       });
-      console.log(unsubscribe);
     } catch (err) {
       console.log(err);
     }
@@ -69,6 +77,36 @@ const Todo = () => {
     }
   };
 
+  const hanldeLoad = (data) => {
+    const lastItem = data[data.length - 1].todo;
+    console.log(lastItem);
+
+    const next = query(
+      collectionRef,
+      orderBy("todo"),
+      startAfter(lastItem),
+      limit(5)
+    );
+
+    try {
+      onSnapshot(next, (snapshot) => {
+        if (snapshot.empty) {
+          setLoadFlag(false);
+          return;
+        }
+        const data = snapshot.docs.map((d) => ({
+          ...d.data(),
+          id: d.id,
+        }));
+
+        setToDos((prev) => {
+          return [...prev, ...data];
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <div className="container">
@@ -129,6 +167,16 @@ const Todo = () => {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div className="py-4 mt-5">
+                  <button
+                    className="btn btn-success"
+                    disabled={loadFlag ? false : true}
+                    onClick={() => hanldeLoad(todos)}
+                  >
+                    {loadFlag ? "Load more..." : "No more data found..."}
+                  </button>
                 </div>
               </div>
             </div>
