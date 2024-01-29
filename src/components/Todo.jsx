@@ -8,6 +8,7 @@ import {
   doc,
   deleteDoc,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
@@ -16,23 +17,24 @@ const Todo = () => {
   const [todos, setToDos] = useState([]);
   const collectionRef = collection(db, "todo");
 
-  const fetchData = async () => {
-    try {
-      const querySnapshot = await getDocs(collectionRef);
-      const data = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setToDos(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
     fetchData();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      const unsubscribe = onSnapshot(collection(db, "todo"), (doc) => {
+        const data = doc.docs.map((d) => ({
+          ...d.data(),
+          id: d.id,
+        }));
+        setToDos(data);
+      });
+      console.log(unsubscribe);
+    } catch (err) {
+      console.log(err);
+    }
+  };
   const sumbitTodo = async (e) => {
     e.preventDefault();
     try {
@@ -41,7 +43,6 @@ const Todo = () => {
         isChecked: false,
         timeStamp: serverTimestamp(),
       });
-      console.log("Document written with ID: ", docRef.id);
       fetchData();
     } catch (error) {
       console.log(error);
