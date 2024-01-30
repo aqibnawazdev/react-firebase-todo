@@ -99,17 +99,6 @@ export default function SignUp() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              {/* <Grid item xs={12}>
-                <TextField
-                  name="fullname"
-                  required
-                  fullWidth
-                  id="fullName"
-                  label="Full Name"
-                  autoFocus
-                />
-              </Grid> */}
-
               <Grid item xs={12}>
                 <TextField
                   required

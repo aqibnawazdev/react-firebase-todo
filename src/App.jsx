@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar";
 import Register from "./components/Register";
 import Todo from "./components/Todo";
 import Login from "./components/Login";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
   const Layout = () => {
@@ -31,6 +32,10 @@ function App() {
         {
           path: "/register",
           element: <Register />,
+        },
+        {
+          path: "/passswordreset",
+          element: <ForgotPassword />,
         },
       ],
     },

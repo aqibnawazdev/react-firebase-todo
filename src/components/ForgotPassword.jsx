@@ -15,17 +15,17 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { Facebook, Google } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const defaultTheme = createTheme();
 
-export default function SignIn() {
+export default function ForgotPassword() {
   const navigate = useNavigate();
   const showToastMessage = (message) => {
-    if (message === "Logged in Successfully...") {
+    if (message === "Success, Check you email inbox") {
       toast.success(message, {
         position: "top-right",
         autoClose: 3000,
@@ -45,22 +45,15 @@ export default function SignIn() {
       });
     }
   };
-  const handleSubmit = (event) => {
+
+  const handlePasswordReset = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
-    const password = data.get("password");
-
     const auth = getAuth();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        if (user) {
-          showToastMessage("Logged in Successfully...");
-          navigate("/");
-        }
-        // ...
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        showToastMessage("Success, Check you email inbox");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -68,7 +61,6 @@ export default function SignIn() {
         showToastMessage(errorMessage);
       });
   };
-
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -86,13 +78,13 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Reset Password
           </Typography>
 
           <ToastContainer />
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={(event) => handlePasswordReset(event)}
             noValidate
             sx={{ mt: 1 }}
           >
@@ -100,21 +92,11 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              id="email"
-              label="Email Address"
               name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              label="Enter your reset email"
+              type="email"
+              id="email"
+              autoComplete="current-email"
             />
 
             <Button
@@ -124,39 +106,15 @@ export default function SignIn() {
               color="secondary"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Send Reset Link
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link to="/passswordreset" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-
               <Grid item>
                 <Link to="/register" variant="body2">
                   {"Don't have an account? Register"}
                 </Link>
               </Grid>
             </Grid>
-            <Typography textAlign="center" color="secondary">
-              or
-            </Typography>
-            <Stack spacing={2} sx={{ marginBottom: "20px", marginTop: "20px" }}>
-              <Item>
-                <IconButton aria-label="delete" disabled color="primary">
-                  <Google />
-                </IconButton>
-                Singin with Google
-              </Item>
-
-              <Item>
-                <IconButton aria-label="delete" disabled color="primary">
-                  <Facebook />
-                </IconButton>
-                Signin with facebook
-              </Item>
-            </Stack>
           </Box>
         </Box>
       </Container>
