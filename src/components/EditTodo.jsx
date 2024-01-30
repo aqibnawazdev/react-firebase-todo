@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../services/firebase.config";
-
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 const EditTodo = ({ task, id, fetch }) => {
   const [todo, setTodo] = useState();
 
@@ -19,17 +20,19 @@ const EditTodo = ({ task, id, fetch }) => {
   };
   return (
     <>
-      <button
-        type="button"
-        className="btn btn-primary"
+      <IconButton
+        aria-label="delete"
         data-bs-toggle="modal"
         data-bs-target={`#id${id}`}
+        onClick={() => {
+          handleDelete(task.id);
+        }}
       >
-        Edit Todo
-      </button>
+        <EditIcon color="secondary" />
+      </IconButton>
 
       <div
-        className="modal fade"
+        className="modal fade mt-5"
         id={`id${id}`}
         tabIndex="-1"
         aria-labelledby="editLabel"

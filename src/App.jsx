@@ -1,17 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Todo from './components/Todo'
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import React from "react";
+import NavBar from "./components/NavBar";
+import Register from "./components/Register";
+import Todo from "./components/Todo";
+import Login from "./components/Login";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const Layout = () => {
+    return (
+      <div className="app">
+        <NavBar />
+        <Outlet />
+      </div>
+    );
+  };
 
-  return (
-    <div className='app'>
-        <Todo/>
-    </div>
-  )
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Layout />,
+      children: [
+        {
+          path: "/",
+          element: <Todo />,
+        },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/register",
+          element: <Register />,
+        },
+      ],
+    },
+  ]);
+
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

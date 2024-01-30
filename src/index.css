@@ -1,19 +1,28 @@
+#root {
+  padding: 0 !important;
+  margin: 0 !important;
+}
 body {
-  margin-top: 20px;
   background: #f8f8f8;
 }
 
 .todo-list {
   margin: 10px 0;
 }
-
+form {
+  width: 500px;
+}
+.link {
+  text-decoration: none !important;
+}
 .todo-list .todo-item {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   background-color: rgb(242, 242, 242);
   align-items: center;
   margin-top: 20px;
   padding: 5px;
+  cursor: pointer;
   border-radius: 4px;
 }
 
@@ -21,6 +30,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  margin-left: 15px;
 }
 .task-details .taskbox {
   display: flex;
