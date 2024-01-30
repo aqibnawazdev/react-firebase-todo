@@ -9,38 +9,66 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import Paper from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
+  const [error, setError] = useState();
   const navigate = useNavigate();
   const [errMessage, setErrorMessag] = useState(null);
+
+  const showToastMessage = (message) => {
+    if (message === "Registered sucessfully...") {
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        progress: undefined,
+      });
+    } else {
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        progress: undefined,
+      });
+    }
+  };
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
     const password = data.get("password");
     const auth = getAuth();
+
     try {
       await createUserWithEmailAndPassword(auth, email, password).then(
         (userCredential) => {
           // Signed up
           const user = userCredential.user;
-          // ...
           if (user) {
-            console.log(user);
-            navigate("/login");
+            showToastMessage("Registered sucessfully...");
+            setTimeout(() => {
+              navigate("/");
+            }, 2000);
           }
         }
       );
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorMessage);
+      showToastMessage(errorMessage);
     }
   };
 
@@ -48,6 +76,7 @@ export default function SignUp() {
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
+
         <Box
           sx={{
             marginTop: 8,
@@ -62,6 +91,7 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+          <ToastContainer />
           <Box
             component="form"
             noValidate
@@ -69,7 +99,7 @@ export default function SignUp() {
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <TextField
                   name="fullname"
                   required
@@ -78,7 +108,7 @@ export default function SignUp() {
                   label="Full Name"
                   autoFocus
                 />
-              </Grid>
+              </Grid> */}
 
               <Grid item xs={12}>
                 <TextField

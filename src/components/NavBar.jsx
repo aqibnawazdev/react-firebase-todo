@@ -14,18 +14,36 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { purple } from "@mui/material/colors";
 import theme from "../theme";
 import { useTheme, withTheme } from "@emotion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { Logout } from "@mui/icons-material";
 
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
-
 function NavBar() {
   const [anchorElNav, setAnchorElNav] = useState();
   const [anchorElUser, setAnchorElUser] = useState();
+  const navigate = useNavigate();
   const theme = useTheme();
+  const auth = getAuth();
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        console.log(user);
+        setUser(user);
+      } else {
+        // User is signed out
+        setUser(false);
+      }
+    });
+  }, []);
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -40,15 +58,18 @@ function NavBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
-  const currentUser = [
-    // {
-    //   id: 1,
-    //   username: "ABC",
-    //   role: "user",
-    // },
-  ];
-
+  const handleLogout = () => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        setAnchorElNav(null);
+        setUser(false);
+        navigate("/login");
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
   return (
     <AppBar position="fixed" color="secondary">
       <Container maxWidth="xl">
@@ -131,7 +152,7 @@ function NavBar() {
               <Typography color={"white"}>Home</Typography>
             </Link>
           </Box>
-          {currentUser.length > 0 ? (
+          {user ? (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -154,11 +175,17 @@ function NavBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Setting</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Profile</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                  <Typography textAlign="center">
+                    <Logout size="small" /> Logout
+                  </Typography>
+                </MenuItem>
               </Menu>
             </Box>
           ) : (
