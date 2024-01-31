@@ -156,7 +156,10 @@ function NavBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                  <Avatar
+                    alt="Remy Sharp"
+                    src={user.providerData[0].photoURL}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -179,7 +182,9 @@ function NavBar() {
                   <Typography textAlign="center">Setting</Typography>
                 </MenuItem>
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">Profile</Typography>
+                  <Link className="link" to="/profile">
+                    <Typography textAlign="center">Profile</Typography>
+                  </Link>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>
                   <Typography textAlign="center">

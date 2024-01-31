@@ -5,6 +5,7 @@ import Register from "./components/Register";
 import Todo from "./components/Todo";
 import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
+import UserProfile from "./components/UserProfile";
 
 function App() {
   const Layout = () => {
@@ -36,6 +37,10 @@ function App() {
         {
           path: "/passswordreset",
           element: <ForgotPassword />,
+        },
+        {
+          path: "/profile",
+          element: <UserProfile />,
         },
       ],
     },
