@@ -14,6 +14,7 @@ import {
   startAt,
   startAfter,
   limit,
+  where,
 } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
@@ -48,27 +49,33 @@ const Todo = () => {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const uid = user.uid;
+        const userId = user.uid;
         // ...
         console.log(user);
         setUser(user);
+        fetchData(userId);
       } else {
         // User is signed out
         setUser(false);
       }
     });
-    fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (userId) => {
     setLoadFlag(true);
+    console.log("User Id", userId);
+    const first = query(
+      collectionRef,
+      where("userId", "==", userId),
+      orderBy("todo"),
+      limit(5)
+    );
 
-    const first = query(collectionRef, orderBy("todo"), limit(5));
     try {
       const unsubscribe = onSnapshot(first, (doc) => {
         const data = doc.docs.map((d) => ({
           ...d.data(),
-          id: d.id,
+          todoId: d.id,
         }));
         setToDos(data);
       });
@@ -83,8 +90,9 @@ const Todo = () => {
         todo: createTodo,
         isChecked: false,
         timeStamp: serverTimestamp(),
+        userId: user.uid,
       });
-      fetchData();
+      fetchData(user.uid);
     } catch (error) {
       console.log(error);
     }
@@ -95,7 +103,7 @@ const Todo = () => {
   const handleDelete = async (id) => {
     const documentRef = doc(db, "todo", id);
     const item = await deleteDoc(documentRef);
-    fetchData();
+    fetchData(user.uid);
   };
 
   const handleCheck = async (id, status) => {
@@ -104,13 +112,13 @@ const Todo = () => {
       await updateDoc(checkTask, {
         isChecked: !status,
       });
-      fetchData();
+      fetchData(user.uid);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const hanldeLoad = (todos) => {
+  const hanldeLoadMore = (todos) => {
     const lastItem = todos[todos.length - 1].todo;
     console.log(lastItem);
 
@@ -118,6 +126,7 @@ const Todo = () => {
       collectionRef,
       orderBy("todo"),
       startAfter(lastItem),
+      where("userId", "==", user.uid),
       limit(5)
     );
 
@@ -130,6 +139,7 @@ const Todo = () => {
         const data = snapshot.docs.map((d) => ({
           ...d.data(),
           id: d.id,
+          createdAt: d.serverTimestamp,
         }));
 
         setToDos((prev) => {
@@ -149,7 +159,7 @@ const Todo = () => {
             xs={10}
             md={7}
             sx={{ marginTop: "100px" }}
-            direction="column"
+            // direction="column"
             alignItems="center"
           >
             <Box
@@ -183,7 +193,7 @@ const Todo = () => {
           <Grid item xs={10} md={7}>
             <div className="todo-list">
               {todos.map((task) => (
-                <Paper elevation={1} className="todo-item" key={task.id}>
+                <Paper elevation={1} className="todo-item" key={task.todoId}>
                   <div className="task-details">
                     <div className="taskbox">
                       <input
@@ -191,10 +201,12 @@ const Todo = () => {
                         id={"checkbox" + task.id}
                         className="chackbox"
                         checked={task.isChecked}
-                        onChange={() => handleCheck(task.id, task.isChecked)}
+                        onChange={() =>
+                          handleCheck(task.todoId, task.isChecked)
+                        }
                       />
                       <Typography
-                        aria-label={"checkbox" + task.id}
+                        aria-label={"checkbox" + task.todoId}
                         className={task.isChecked ? "task checked" : "task"}
                         component="h4"
                       >
@@ -207,14 +219,14 @@ const Todo = () => {
                     <span className="mx-3">
                       <EditTodo
                         task={task.todo}
-                        id={task.id}
+                        id={task.todoId}
                         fetch={fetchData}
                       />
                     </span>
                     <IconButton
                       aria-label="delete"
                       onClick={() => {
-                        handleDelete(task.id);
+                        handleDelete(task.todoId);
                       }}
                     >
                       <DeleteIcon color="secondary" />
@@ -230,7 +242,7 @@ const Todo = () => {
                 variant="contained"
                 className="btn btn-success"
                 disabled={loadFlag ? false : true}
-                onClick={() => hanldeLoad(todos)}
+                onClick={() => hanldeLoadMore(todos)}
               >
                 {loadFlag ? "Load more..." : "No more data found..."}
               </Button>

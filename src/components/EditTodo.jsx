@@ -21,12 +21,9 @@ const EditTodo = ({ task, id, fetch }) => {
   return (
     <>
       <IconButton
-        aria-label="delete"
+        aria-label="editLabel"
         data-bs-toggle="modal"
         data-bs-target={`#id${id}`}
-        onClick={() => {
-          handleDelete(task.id);
-        }}
       >
         <EditIcon color="secondary" />
       </IconButton>

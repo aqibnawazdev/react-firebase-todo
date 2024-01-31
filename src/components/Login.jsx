@@ -41,7 +41,6 @@ export default function SignIn() {
         navigate("/");
       } else {
         // User is signed out
-        setUser(false);
       }
     });
   }, []);
