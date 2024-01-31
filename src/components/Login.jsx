@@ -15,15 +15,37 @@ import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
 import { Facebook, Google } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { useEffect } from "react";
+import { auth } from "../services/firebase.config";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
+  const auth = getAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        navigate("/");
+      } else {
+        // User is signed out
+        setUser(false);
+      }
+    });
+  }, []);
+
   const showToastMessage = (message) => {
     if (message === "Logged in Successfully...") {
       toast.success(message, {
@@ -45,6 +67,7 @@ export default function SignIn() {
       });
     }
   };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -69,6 +92,31 @@ export default function SignIn() {
       });
   };
 
+  const handleGoogleAuth = () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+  };
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -143,7 +191,7 @@ export default function SignIn() {
               or
             </Typography>
             <Stack spacing={2} sx={{ marginBottom: "20px", marginTop: "20px" }}>
-              <Item>
+              <Item onClick={handleGoogleAuth}>
                 <IconButton aria-label="delete" disabled color="primary">
                   <Google />
                 </IconButton>
