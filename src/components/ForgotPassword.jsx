@@ -23,6 +23,8 @@ import "react-toastify/dist/ReactToastify.css";
 const defaultTheme = createTheme();
 
 export default function ForgotPassword() {
+  const [isResetLinkSent, setIsResetLinkSent] = React.useState(false);
+
   const navigate = useNavigate();
   const showToastMessage = (message) => {
     if (message === "Success, Check you email inbox") {
@@ -45,15 +47,19 @@ export default function ForgotPassword() {
       });
     }
   };
-
+  const handleNavigate = () => {
+    navigate("/login");
+  };
   const handlePasswordReset = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
     const auth = getAuth();
     sendPasswordResetEmail(auth, email)
-      .then(() => {
+      .then((n) => {
+        console.log(n);
         showToastMessage("Success, Check you email inbox");
+        setIsResetLinkSent(true);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -78,7 +84,9 @@ export default function ForgotPassword() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Reset Password
+            {isResetLinkSent
+              ? "Please Check you email to reset your password and comeback to signin"
+              : "Reset Password"}
           </Typography>
 
           <ToastContainer />
@@ -88,26 +96,41 @@ export default function ForgotPassword() {
             noValidate
             sx={{ mt: 1 }}
           >
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="email"
-              label="Enter your reset email"
-              type="email"
-              id="email"
-              autoComplete="current-email"
-            />
+            {isResetLinkSent ? (
+              ""
+            ) : (
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="email"
+                label="Enter your reset email"
+                type="email"
+                id="email"
+              />
+            )}
+            {isResetLinkSent ? (
+              <Button
+                fullWidth
+                variant="contained"
+                color="secondary"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={handleNavigate}
+              >
+                Click to Signin
+              </Button>
+            ) : (
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="secondary"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Send Reset Link
+              </Button>
+            )}
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="secondary"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Send Reset Link
-            </Button>
             <Grid container>
               <Grid item>
                 <Link to="/register" variant="body2">
