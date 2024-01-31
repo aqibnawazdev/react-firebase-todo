@@ -20,6 +20,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  FacebookAuthProvider,
   onAuthStateChanged,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +28,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useEffect } from "react";
-import { auth } from "../services/firebase.config";
 const defaultTheme = createTheme();
 
 export default function SignIn() {
@@ -117,6 +117,35 @@ export default function SignIn() {
         // ...
       });
   };
+  const handleFacebookAuth = () => {
+    const provider = new FacebookAuthProvider();
+    provider.addScope("user_birthday");
+    const auth = getAuth();
+
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // The signed-in user info.
+        const user = result.user;
+
+        // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+        const credential = FacebookAuthProvider.credentialFromResult(result);
+        const accessToken = credential.accessToken;
+
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = FacebookAuthProvider.credentialFromError(error);
+
+        // ...
+      });
+  };
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -198,7 +227,7 @@ export default function SignIn() {
                 Singin with Google
               </Item>
 
-              <Item>
+              <Item onClick={handleFacebookAuth}>
                 <IconButton aria-label="delete" disabled color="primary">
                   <Facebook />
                 </IconButton>
