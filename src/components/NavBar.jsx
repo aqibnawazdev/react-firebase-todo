@@ -13,21 +13,16 @@ import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
 import { Link, useNavigate } from "react-router-dom";
-import { purple } from "@mui/material/colors";
-import theme from "../theme";
-import { useTheme, withTheme } from "@emotion/react";
+import { useTheme } from "@emotion/react";
 import { useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { Logout } from "@mui/icons-material";
 
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
 function NavBar() {
   const [anchorElNav, setAnchorElNav] = useState();
   const [anchorElUser, setAnchorElUser] = useState();
   const navigate = useNavigate();
-  const theme = useTheme();
   const auth = getAuth();
   const [user, setUser] = useState();
 
@@ -38,7 +33,6 @@ function NavBar() {
         console.log(user);
         setUser(user);
       } else {
-        // User is signed out
         setUser(false);
       }
     });
@@ -66,9 +60,7 @@ function NavBar() {
         setUser(false);
         navigate("/login");
       })
-      .catch((error) => {
-        // An error happened.
-      });
+      .catch((error) => {});
   };
   return (
     <AppBar position="fixed" color="secondary">
@@ -79,7 +71,7 @@ function NavBar() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -156,6 +148,9 @@ function NavBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Typography component={"body2"} color="white" mr={2}>
+                    Hi, {user.providerData[0].displayName}
+                  </Typography>
                   <Avatar
                     alt="Remy Sharp"
                     src={user.providerData[0].photoURL}
@@ -179,13 +174,17 @@ function NavBar() {
                 onClose={handleCloseUserMenu}
               >
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">Setting</Typography>
+                  <Link className="link" to="/">
+                    <Typography textAlign="center">Home</Typography>
+                  </Link>
                 </MenuItem>
+
                 <MenuItem onClick={handleCloseUserMenu}>
                   <Link className="link" to="/profile">
                     <Typography textAlign="center">Profile</Typography>
                   </Link>
                 </MenuItem>
+
                 <MenuItem onClick={handleLogout}>
                   <Typography textAlign="center">
                     <Logout size="small" /> Logout
