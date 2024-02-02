@@ -22,11 +22,12 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   onAuthStateChanged,
+  signInWithCustomToken,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import axios from "axios";
 import { useEffect } from "react";
 const defaultTheme = createTheme();
 
@@ -145,6 +146,28 @@ export default function SignIn() {
         // ...
       });
   };
+  const customClaim = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const id = "1234";
+    const claims = {
+      admin: true,
+    };
+    const auth = getAuth();
+    const { data } = await axios.post(
+      "http://127.0.0.1:5000/VerificationLink",
+      {
+        id,
+        email,
+        password,
+        claims,
+      }
+    );
+
+    console.log("Token", data);
+  };
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -168,7 +191,10 @@ export default function SignIn() {
           <ToastContainer />
           <Box
             component="form"
-            onSubmit={handleSubmit}
+            onSubmit={(e) => {
+              handleSubmit(e);
+              // customClaim(e);
+            }}
             noValidate
             sx={{ mt: 1 }}
           >

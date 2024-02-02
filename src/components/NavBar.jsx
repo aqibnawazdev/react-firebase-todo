@@ -149,11 +149,15 @@ function NavBar() {
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Typography component={"body2"} color="white" mr={2}>
-                    Hi, {user.providerData[0].displayName}
+                    Hi,{" "}
+                    {user?.providerData[0]?.displayName ||
+                    user?.email === "admin@gmail.com"
+                      ? "Admin"
+                      : "User"}
                   </Typography>
                   <Avatar
                     alt="Remy Sharp"
-                    src={user.providerData[0].photoURL}
+                    src={user?.providerData[0]?.photoURL || ""}
                   />
                 </IconButton>
               </Tooltip>
@@ -184,6 +188,13 @@ function NavBar() {
                     <Typography textAlign="center">Profile</Typography>
                   </Link>
                 </MenuItem>
+                {user.email === "admin@gmail.com" && (
+                  <MenuItem onClick={handleCloseUserMenu}>
+                    <Link className="link" to="/manageUser">
+                      <Typography textAlign="center">Manage Users </Typography>
+                    </Link>
+                  </MenuItem>
+                )}
 
                 <MenuItem onClick={handleLogout}>
                   <Typography textAlign="center">

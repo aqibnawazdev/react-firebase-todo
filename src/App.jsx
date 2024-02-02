@@ -12,6 +12,7 @@ import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import UserProfile from "./components/UserProfile";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import ManageUsers from "./components/ManageUsers";
 
 function App() {
   const Layout = () => {
@@ -62,6 +63,10 @@ function App() {
         {
           path: "/profile",
           element: <UserProfile />,
+        },
+        {
+          path: "/manageusers",
+          element: <ManageUsers />,
         },
       ],
     },
