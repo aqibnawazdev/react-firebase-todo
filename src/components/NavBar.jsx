@@ -25,10 +25,24 @@ function NavBar() {
   const navigate = useNavigate();
   const auth = getAuth();
   const [user, setUser] = useState();
+  const [role, setRole] = useState("user");
+
+  const getClaim = () => {
+    auth.currentUser
+      .getIdTokenResult()
+      .then((idTokenResult) => {
+        console.log(idTokenResult.claims);
+        setRole(idTokenResult.claims.claim);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        getClaim();
         const uid = user.uid;
         console.log(user);
         setUser(user);
@@ -149,11 +163,7 @@ function NavBar() {
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Typography component={"body2"} color="white" mr={2}>
-                    Hi,{" "}
-                    {user?.providerData[0]?.displayName ||
-                    user?.email === "admin@gmail.com"
-                      ? "Admin"
-                      : "User"}
+                    Hi, {role}
                   </Typography>
                   <Avatar
                     alt="Remy Sharp"
@@ -188,7 +198,7 @@ function NavBar() {
                     <Typography textAlign="center">Profile</Typography>
                   </Link>
                 </MenuItem>
-                {user.email === "admin@gmail.com" && (
+                {role === "admin" && (
                   <MenuItem onClick={handleCloseUserMenu}>
                     <Link className="link" to="/manageUser">
                       <Typography textAlign="center">Manage Users </Typography>
