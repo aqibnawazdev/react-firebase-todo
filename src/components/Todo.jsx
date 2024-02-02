@@ -46,11 +46,25 @@ const Todo = () => {
 
   const collectionRef = collection(db, "todo");
 
+  const getClaim = () => {
+    auth.currentUser
+      .getIdTokenResult()
+      .then((idTokenResult) => {
+        // Confirm the user is an Admin.
+        console.log(idTokenResult.claims);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const userId = user.uid;
         // ...
+        getClaim();
+
         console.log(user);
         setUser(user);
         fetchData(userId);
@@ -83,6 +97,7 @@ const Todo = () => {
       console.log(err);
     }
   };
+
   const sumbitTodo = async (e) => {
     e.preventDefault();
     try {

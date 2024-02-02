@@ -21,7 +21,6 @@ function ManageUsers() {
 
   const fetchAllUsers = async () => {
     const { data } = await axios.get("http://127.0.0.1:5000/users");
-    console.log(data.data);
     setData(data.data);
   };
 

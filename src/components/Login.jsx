@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import { styled } from "@mui/material/styles";
+import { Firestore } from "firebase/firestore";
 import { Facebook, Google } from "@mui/icons-material";
 import IconButton from "@mui/material/IconButton";
 import {
@@ -22,7 +23,6 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   onAuthStateChanged,
-  signInWithCustomToken,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
@@ -146,28 +146,28 @@ export default function SignIn() {
         // ...
       });
   };
-  const customClaim = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const id = "1234";
-    const claims = {
-      admin: true,
-    };
-    const auth = getAuth();
-    const { data } = await axios.post(
-      "http://127.0.0.1:5000/VerificationLink",
-      {
-        id,
-        email,
-        password,
-        claims,
-      }
-    );
+  // const customClaim = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.currentTarget);
+  //   const email = formData.get("email");
+  //   const password = formData.get("password");
+  //   const id = "1234";
+  //   const claims = {
+  //     admin: true,
+  //   };
+  //   const auth = getAuth();
+  //   const { data } = await axios.post(
+  //     "http://127.0.0.1:5000/VerificationLink",
+  //     {
+  //       id,
+  //       email,
+  //       password,
+  //       claims,
+  //     }
+  //   );
 
-    console.log("Token", data);
-  };
+  //   console.log("Token", data);
+  // };
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
