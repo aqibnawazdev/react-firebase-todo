@@ -15,6 +15,7 @@ import {
   startAfter,
   limit,
   where,
+  Timestamp,
 } from "firebase/firestore";
 import { db } from "../services/firebase.config";
 
@@ -33,6 +34,13 @@ import TextField from "@mui/material/TextField";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
+import dayjs from "dayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import moment from "moment";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 const defaultTheme = createTheme();
 
@@ -41,7 +49,11 @@ const Todo = () => {
   const [todos, setToDos] = useState([]);
   const [loadFlag, setLoadFlag] = useState(true);
   const [user, setUser] = useState(false);
+  const [deadline, setDeadline] = useState(
+    dayjs(new Date().toLocaleDateString())
+  );
   const navigate = useNavigate();
+
   const auth = getAuth();
 
   const collectionRef = collection(db, "todo");
@@ -104,10 +116,14 @@ const Todo = () => {
       const docRef = await addDoc(collectionRef, {
         todo: createTodo,
         isChecked: false,
-        timeStamp: serverTimestamp(),
+        createdAt: serverTimestamp(),
         userId: user.uid,
+        isActive: true,
+        deadline: new Date(deadline),
+        isExpire: false,
       });
       fetchData(user.uid);
+      setDeadline("");
     } catch (error) {
       console.log(error);
     }
@@ -171,6 +187,8 @@ const Todo = () => {
         <>
           <Grid
             item
+            container
+            gap={4}
             xs={10}
             md={7}
             sx={{ marginTop: "100px" }}
@@ -195,6 +213,20 @@ const Todo = () => {
                 value={createTodo}
                 onChange={(e) => setCreateTodo(e.target.value)}
               />
+
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer
+                  components={["DatePicker"]}
+                  sx={{ margin: "10px 0px" }}
+                >
+                  <DateTimePicker
+                    label="Task Deadline"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.format())}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+
               <Button
                 type="submit"
                 variant="contained"
@@ -208,7 +240,13 @@ const Todo = () => {
           <Grid item xs={10} md={7}>
             <div className="todo-list">
               {todos.map((task) => (
-                <Paper elevation={1} className="todo-item" key={task.todoId}>
+                <Paper
+                  elevation={1}
+                  className={
+                    task.isExpire ? "todo-item todo-item-expire" : "todo-item"
+                  }
+                  key={task.todoId}
+                >
                   <div className="task-details">
                     <div className="taskbox">
                       <input
@@ -225,10 +263,15 @@ const Todo = () => {
                         className={task.isChecked ? "task checked" : "task"}
                         component="h4"
                       >
-                        &nbsp; {task.todo}
+                        {task.todo}
+                      </Typography>
+                      <Typography className="startDate">
+                        Status: {task.isExpire ? "Expired" : "Active"}
+                      </Typography>
+                      <Typography className="deadling">
+                        {/* Expires At: {task.deadline} */}
                       </Typography>
                     </div>
-                    <div className="date"></div>
                   </div>
                   <div className="buttons">
                     <span className="mx-3">

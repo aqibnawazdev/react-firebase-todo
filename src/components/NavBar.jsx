@@ -200,7 +200,7 @@ function NavBar() {
                 </MenuItem>
                 {role === "admin" && (
                   <MenuItem onClick={handleCloseUserMenu}>
-                    <Link className="link" to="/manageUser">
+                    <Link className="link" to="/manageusers">
                       <Typography textAlign="center">Manage Users </Typography>
                     </Link>
                   </MenuItem>
