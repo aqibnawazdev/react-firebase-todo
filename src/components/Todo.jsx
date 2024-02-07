@@ -63,7 +63,7 @@ const Todo = () => {
       .getIdTokenResult()
       .then((idTokenResult) => {
         // Confirm the user is an Admin.
-        console.log(idTokenResult.claims);
+        // console.log(idTokenResult.claims);
       })
       .catch((error) => {
         console.log(error);
@@ -77,19 +77,20 @@ const Todo = () => {
         // ...
         getClaim();
 
-        console.log(user);
+        // console.log(user);
         setUser(user);
         fetchData(userId);
       } else {
         // User is signed out
         setUser(false);
+        navigate("/");
       }
     });
   }, []);
 
   const fetchData = async (userId) => {
     setLoadFlag(true);
-    console.log("User Id", userId);
+    // console.log("User Id", userId);
     const first = query(
       collectionRef,
       where("userId", "==", userId),
@@ -101,6 +102,7 @@ const Todo = () => {
       const unsubscribe = onSnapshot(first, (doc) => {
         const data = doc.docs.map((d) => ({
           ...d.data(),
+          deadline: d.data().deadline.toDate(),
           todoId: d.id,
         }));
         setToDos(data);
@@ -183,7 +185,7 @@ const Todo = () => {
   };
   return (
     <Grid container alignItems="center" flex justifyContent="center">
-      {user ? (
+      {user && (
         <>
           <Grid
             item
@@ -269,7 +271,7 @@ const Todo = () => {
                         Status: {task.isExpire ? "Expired" : "Active"}
                       </Typography>
                       <Typography className="deadling">
-                        {/* Expires At: {task.deadline} */}
+                        Expires: {moment(String(task.deadline)).fromNow()}
                       </Typography>
                     </div>
                   </div>
@@ -354,8 +356,6 @@ const Todo = () => {
             </div>
           </div>
         </>
-      ) : (
-        navigate("/login")
       )}
     </Grid>
   );

@@ -31,7 +31,7 @@ function NavBar() {
     auth.currentUser
       .getIdTokenResult()
       .then((idTokenResult) => {
-        console.log(idTokenResult.claims);
+        // console.log(idTokenResult.claims);
         setRole(idTokenResult.claims.claim);
       })
       .catch((error) => {
@@ -44,7 +44,7 @@ function NavBar() {
       if (user) {
         getClaim();
         const uid = user.uid;
-        console.log(user);
+        // console.log(user);
         setUser(user);
       } else {
         setUser(false);
@@ -162,7 +162,7 @@ function NavBar() {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Typography component={"body2"} color="white" mr={2}>
+                  <Typography variant="body2" color="white" mr={2}>
                     Hi, {role}
                   </Typography>
                   <Avatar
